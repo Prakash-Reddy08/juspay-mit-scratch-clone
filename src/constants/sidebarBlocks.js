@@ -27,7 +27,7 @@ export default {
         {
             text: 'Turn -15 degrees',
             type: TURN_DEGREES,
-            defaultPayload: { degree: 15 }
+            defaultPayload: { degree: -15 }
         },
         {
             text: 'Turn 360 degrees',
