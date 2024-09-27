@@ -15,27 +15,17 @@ export const REPEAT = "Repeat"
 export default {
     Motion: [
         {
-            text: 'Move 10 steps',
+            text: 'Move __ steps',
             type: MOVE_STEPS,
             defaultPayload: { steps: 10 }
         },
         {
-            text: 'Turn 15 degrees',
-            type: TURN_DEGREES,
-            defaultPayload: { degree: 15 }
-        },
-        {
-            text: 'Turn -15 degrees',
+            text: 'Turn __ degrees',
             type: TURN_DEGREES,
             defaultPayload: { degree: -15 }
         },
         {
-            text: 'Turn 360 degrees',
-            type: TURN_DEGREES,
-            defaultPayload: { degree: 360 }
-        },
-        {
-            text: "Go To x:100 y:100",
+            text: "Go To x:__ y: __",
             type: GO_TO,
             defaultPayload: { x: 100, y: 100 }
         },

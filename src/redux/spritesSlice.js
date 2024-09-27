@@ -83,10 +83,16 @@ const spritesSlice = createSlice({
         },
         resetCollisionHandled: (state) => {
             state.collisionHandled = false;
+        },
+        updateActionValue: (state, action) => {
+            const sprite = state.sprites.find((s) => s.id === state.selectedSpriteId);
+            const { index, field, value } = action.payload;
+            console.log(sprite.actions[index])
+            sprite.actions[index]['payload'][field] = value
         }
     },
 });
 
-export const { addSprite, selectSprite, toggleCollision, resetCollisionHandled, deleteAction, checkCollisionAndSwap, goTo, move, rotate, updateRepeatPayload, addActionToSprite, playAllSprites } = spritesSlice.actions;
+export const { addSprite, selectSprite, updateActionValue, toggleCollision, resetCollisionHandled, deleteAction, checkCollisionAndSwap, goTo, move, rotate, updateRepeatPayload, addActionToSprite, playAllSprites } = spritesSlice.actions;
 
 export default spritesSlice.reducer;
