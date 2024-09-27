@@ -1,5 +1,4 @@
 import React from "react";
-import Icon from "./Icon";
 import sidebarBlocks, { controlColor, motionColor } from "../constants/sidebarBlocks";
 
 export default function Sidebar() {
