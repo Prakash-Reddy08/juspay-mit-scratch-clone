@@ -1,8 +1,11 @@
 import React, { useEffect, useRef } from "react";
-import Sprite, { SpriteImage } from "./Sprite";
+import Sprite from "./Sprite";
 import { useDispatch, useSelector } from "react-redux";
-import { goTo, move, rotate, updateIntervalId, } from "../redux/spritesSlice";
+import { goTo, move, rotate, selectSprite, updateIntervalId, } from "../redux/spritesSlice";
 import { PlayCircle } from "lucide-react";
+import { AddSprites } from "./AddSprites";
+import SpriteCard from "./SpriteCard";
+import { GO_TO, MOVE_STEPS, REPEAT, TURN_DEGREES } from "../constants/sidebarBlocks";
 
 export default function PreviewArea() {
   const spritesState = useSelector((state) => state.sprites);
@@ -10,26 +13,21 @@ export default function PreviewArea() {
   const selectedSpritId = spritesState.selectedSpriteId
   const dispatch = useDispatch();
   const intervalRefs = useRef({});
-
   const executeAction = ({ spriteId, type, payload }) => {
-    type = type.toLowerCase();
     const sprite = sprites.find(sprite => sprite.id === spriteId);
     if (sprite) {
       switch (type) {
-        case 'move':
+        case MOVE_STEPS:
           dispatch(move({ spriteId, ...payload }));
           break;
-        case 'rotate':
+        case TURN_DEGREES:
           dispatch(rotate({ spriteId, ...payload }));
           break;
-        case 'reverse-rotate':
-          dispatch(rotate({ spriteId, ...payload }));
-          break;
-        case 'goto':
+        case GO_TO:
           dispatch(goTo({ spriteId, ...payload }));
           break;
-        case 'repeat':
-          repeatSpriteActions({ spriteId, interval: 400 });
+        case REPEAT:
+          repeatSpriteActions({ spriteId, interval: 200 });
           break;
         default:
           break;
@@ -108,24 +106,20 @@ export default function PreviewArea() {
       <div className="flex flex-col border-t-2 border-gray-200 bg-gray-100 p-2" style={{ flex: 0.2 }}>
         <div className="flex justify-between items-center mb-2">
           <p className="font-bold text-lg">Sprites</p>
-          <button
-            className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
-            onClick={() => dispatch(addNewSprite())}
-          >
-            Add Sprite
-          </button>
+          <AddSprites />
         </div>
         <div className="flex gap-4 items-start overflow-x-auto">
           <div className="flex gap-2">
-            {sprites.map((sprite) => (
-              <div
-                key={sprite.id}
-                className="flex flex-col items-center cursor-pointer"
-                style={{ border: selectedSpritId === sprite.id ? "2px solid hsla(260, 60%, 60%, 1)" : "" }}
-              >
-                <SpriteImage sprite={sprite} />
-                <p className="text-sm mt-1">{sprite.name}</p>
-              </div>
+            {sprites.map((sprite, index) => (
+              <SpriteCard
+                key={index}
+                spriteName={sprite.name}
+                selected={sprite.id === selectedSpritId}
+                onClick={(e) => {
+                  e.preventDefault()
+                  dispatch(selectSprite(sprite.id))
+                }}
+              />
             ))}
           </div>
         </div>

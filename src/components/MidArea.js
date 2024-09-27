@@ -14,10 +14,11 @@ const MidArea = () => {
   const handleDrop = (e) => {
     e.preventDefault();
     const actionType = e.dataTransfer.getData('actionType');
+    const actionText = e.dataTransfer.getData('text');
     const payload = JSON.parse(e.dataTransfer.getData('payload'));
 
     if (selectedSpriteId) {
-      dispatch(addActionToSprite({ spriteId: selectedSpriteId, actionType, payload }));
+      dispatch(addActionToSprite({ spriteId: selectedSpriteId, actionType, actionText, payload }));
     }
   };
 
@@ -34,14 +35,14 @@ const MidArea = () => {
             <div className='flex gap-4'>
               <h2 className="text-2xl flex font-bold text-gray-800 mb-4">Actions for Selected Sprite
               </h2>
-              <div className='text-sm'><SpriteImage sprite={selectedSprite} styles={{ width: "50px", height: "50px" }} /></div>
+              <div className='text-sm'><SpriteImage spriteName={selectedSprite.name} styles={{ width: "50px", height: "50px" }} /></div>
             </div>
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-700 mb-2">Current Actions:</h3>
               <ul className="space-y-2">
                 {selectedSprite.actions.map((action, index) => (
                   <li key={index} className="bg-blue-100 text-blue-800 px-3 py-1 flex justify-between rounded-full text-sm">
-                    {action.type}
+                    {action.text}
                     <button onClick={(e) => {
                       e.preventDefault();
                       dispatch(deleteAction({ index }))

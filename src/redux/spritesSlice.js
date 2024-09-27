@@ -1,27 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { v4 as uuid } from 'uuid';
-const id1 = uuid()
-const id2 = uuid()
+import allSprites from '../constants/sprites'
 const initialState = {
     sprites: [
-        {
-            id: id1,
-            name: "cat",
-            position: { x: 0, y: 0 },
-            rotation: 0,
-            actions: [],
-            repeatIntervalId: null,
-        },
-        {
-            id: id2,
-            name: "dog",
-            position: { x: 140, y: 0 },
-            rotation: 0,
-            actions: [],
-            repeatIntervalId: null,
-        }
+        allSprites[0]
     ],
-    selectedSpriteId: id1,
+    selectedSpriteId: allSprites[0].id,
 };
 
 const spritesSlice = createSlice({
@@ -43,10 +26,10 @@ const spritesSlice = createSlice({
             state.selectedSpriteId = action.payload;
         },
         addActionToSprite: (state, action) => {
-            const { spriteId, actionType, payload } = action.payload;
+            const { spriteId, actionType, actionText, payload } = action.payload;
             const sprite = state.sprites.find(sprite => sprite.id === spriteId);
             if (sprite) {
-                sprite.actions.push({ type: actionType, payload });
+                sprite.actions.push({ type: actionType, text: actionText, payload });
             }
         },
         move: (state, action) => {
@@ -60,8 +43,8 @@ const spritesSlice = createSlice({
         goTo: (state, action) => {
             const { x, y, spriteId } = action.payload;
             const sprite = state.sprites.find((s) => s.id === spriteId)
-            sprite.position.x += Math.cos((sprite.rotation * Math.PI) / 180) * x;
-            sprite.position.y += Math.sin((sprite.rotation * Math.PI) / 180) * y;
+            sprite.position.x = x;
+            sprite.position.y = y;
         },
         rotate: (state, action) => {
             const { degree, spriteId } = action.payload;

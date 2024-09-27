@@ -3,8 +3,9 @@ import Icon from "./Icon";
 import sidebarBlocks, { controlColor, motionColor } from "../constants/sidebarBlocks";
 
 export default function Sidebar() {
-  const handleDragStart = (e, actionType, payload) => {
+  const handleDragStart = (e, actionType, payload, text) => {
     e.dataTransfer.setData('actionType', actionType);
+    e.dataTransfer.setData('text', text);
     e.dataTransfer.setData('payload', JSON.stringify(payload));
   };
   return (
@@ -33,8 +34,8 @@ export default function Sidebar() {
                   return <div
                     key={index}
                     draggable
-                    onDragStart={(e) => handleDragStart(e, block.type, block.defaultPayload)}
-                    className={`flex flex-row flex-wrap ${bgColor} ${textColor} px-2 py-1 my-2 text-sm cursor-pointer`}
+                    onDragStart={(e) => handleDragStart(e, block.type, block.defaultPayload, block.text)}
+                    className={`flex flex-row ${bgColor} ${textColor} px-2 py-1 my-2 text-sm cursor-pointer`}
                   >
                     {block.text}
                   </div>
