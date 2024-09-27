@@ -14,49 +14,15 @@ export default function PreviewArea() {
   const dispatch = useDispatch();
   const intervalRefs = useRef({});
   const executeAction = ({ spriteId, type, payload }) => {
-    const sprite = sprites.find(sprite => sprite.id === spriteId);
-    if (sprite) {
-      switch (type) {
-        case MOVE_STEPS:
-          dispatch(move({ spriteId, ...payload }));
-          break;
-        case TURN_DEGREES:
-          dispatch(rotate({ spriteId, ...payload }));
-          break;
-        case GO_TO:
-          dispatch(goTo({ spriteId, ...payload }));
-          break;
-        case REPEAT:
-          repeatSpriteActions({ spriteId, interval: 200 });
-          break;
-        default:
-          break;
-      }
-    }
-  };
+    const actionMap = {
+      [MOVE_STEPS]: () => dispatch(move({ spriteId, ...payload })),
+      [TURN_DEGREES]: () => dispatch(rotate({ spriteId, ...payload })),
+      [GO_TO]: () => dispatch(goTo({ spriteId, ...payload })),
+      [REPEAT]: () => play(),
+    };
 
-  const repeatSpriteActions = ({ spriteId, interval }) => {
-    const sprite = sprites.find(s => s.id === spriteId);
-    if (!sprite) return;
-
-    if (intervalRefs.current[spriteId]) {
-      clearInterval(intervalRefs.current[spriteId]);
-    }
-
-    let actionIndex = 0;
-    const repeatInterval = setInterval(() => {
-      if (actionIndex >= sprite.actions.length) {
-        actionIndex = 0;
-      }
-
-      const action = sprite.actions[actionIndex];
-      executeAction({ spriteId, type: action.type, payload: action.payload });
-
-      actionIndex += 1;
-    }, interval);
-
-    intervalRefs.current[spriteId] = repeatInterval;
-    dispatch(updateIntervalId({ spriteId, repeatInterval }));
+    const action = actionMap[type];
+    if (action) action();
   };
 
   const play = () => {
