@@ -3,6 +3,8 @@ const catId = uuid()
 const dogId = uuid()
 const birdId = uuid()
 
+export const SPRITE_WIDTH = 85;
+export const SPRITE_HEIGHT = 85;
 export default [
     {
         id: catId,
@@ -10,7 +12,6 @@ export default [
         position: { x: 0, y: 0 },
         rotation: 0,
         actions: [],
-        repeatIntervalId: null,
     },
     {
         id: dogId,
@@ -18,7 +19,6 @@ export default [
         position: { x: 140, y: 0 },
         rotation: 0,
         actions: [],
-        repeatIntervalId: null,
     },
     {
         id: birdId,
@@ -26,6 +26,5 @@ export default [
         position: { x: 140, y: 0 },
         rotation: 0,
         actions: [],
-        repeatIntervalId: null,
     }
 ]

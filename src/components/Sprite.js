@@ -4,6 +4,7 @@ import CatSprite from '../sprites/CatSprite';
 import DogSprite from '../sprites/DogSprite';
 import BirdSprite from '../sprites/BirdSprite';
 import { selectSprite } from '../redux/spritesSlice';
+import { SPRITE_HEIGHT, SPRITE_WIDTH } from '../constants/sprites';
 
 export const SpriteImage = ({ spriteName, styles, handleClick }) => {
     switch (spriteName) {
@@ -25,12 +26,12 @@ const Sprite = ({ sprite }) => {
     }
     return (
         <div
-            className="sprite absolute transition-transform duration-400 ease-in-out"
+            className="sprite absolute transition-transform duration-400"
             style={{
                 transform: `translate(${sprite.position.x}px, ${sprite.position.y}px) rotate(${sprite.rotation}deg)`,
             }}
         >
-            <SpriteImage spriteName={sprite.name} handleClick={handleClick} />
+            <SpriteImage spriteName={sprite.name} handleClick={handleClick} styles={{ width: SPRITE_WIDTH + "px", height: SPRITE_HEIGHT + "px" }} />
         </div>
     );
 };
