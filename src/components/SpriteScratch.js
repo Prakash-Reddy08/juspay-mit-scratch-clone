@@ -9,7 +9,7 @@ export default function SpriteScratch() {
     const spritesState = useSelector((state) => state.sprites);
     const sprites = spritesState.sprites;
     const dispatch = useDispatch();
-    const intervalRefs = useRef({});
+    const timeoutRefs = useRef({});
     const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
     const [draggingSprite, setDraggingSprite] = useState(null);
     const containerRef = useRef(null);
@@ -18,42 +18,48 @@ export default function SpriteScratch() {
             [MOVE_STEPS]: () => dispatch(move({ spriteId, ...payload })),
             [TURN_DEGREES]: () => dispatch(rotate({ spriteId, ...payload })),
             [GO_TO]: () => dispatch(goTo({ spriteId, ...payload })),
-            [REPEAT]: () => play(),
+            [REPEAT]: () => playForSprite(spriteId),
         };
 
         const action = actionMap[type];
         if (action) action();
     };
 
+    const playForSprite = (spriteId) => {
+        const sprite = sprites.find(sprite => sprite.id === spriteId);
+        if (!sprite || sprite.actions.length === 0) return;
+
+        let actionIndex = 0;
+        clearTimeout(timeoutRefs.current[sprite.id]);
+
+        const executeNextAction = () => {
+            if (actionIndex >= sprite.actions.length) return;
+
+            const action = sprite.actions[actionIndex];
+            executeAction({ spriteId: sprite.id, type: action.type, payload: action.payload });
+
+            if (sprites.length > 1 && spritesState.showCollisionAnimation && !spritesState.collisionHandled) {
+                sprites.forEach((sprite2) => {
+                    if (sprite2.name !== sprite.name) {
+                        dispatch(checkCollisionAndSwap({ spriteId1: sprite.id, spriteId2: sprite2.id }));
+                    }
+                });
+            }
+
+            actionIndex++;
+            timeoutRefs.current[sprite.id] = setTimeout(executeNextAction, 400);
+        };
+
+        executeNextAction();
+    };
     const play = () => {
         sprites.forEach((sprite) => {
-            if (sprite.actions.length === 0) return;
-
-            let actionIndex = 0;
-            clearTimeout(intervalRefs.current[sprite.id])
-            const executeNextAction = () => {
-                if (actionIndex >= sprite.actions.length) {
-                    return;
-                }
-                const action = sprite.actions[actionIndex];
-                executeAction({ spriteId: sprite.id, type: action.type, payload: action.payload });
-                if (sprites.length > 1 && spritesState.showCollisionAnimation && !spritesState.collisionHandled) {
-                    sprites.forEach((sprite2) => {
-                        if (sprite2.name !== sprite.name) {
-                            dispatch(checkCollisionAndSwap({ spriteId1: sprite.id, spriteId2: sprite2.id }))
-                        }
-                    });
-                }
-                actionIndex++;
-                intervalRefs.current[sprite.id] = setTimeout(executeNextAction, 400);
-            };
-
-            executeNextAction();
+            playForSprite(sprite.id);
         });
     };
     const clearTimeouts = () => {
-        Object.keys(intervalRefs.current).forEach(spriteId => {
-            clearTimeout(intervalRefs.current[spriteId]);
+        Object.keys(timeoutRefs.current).forEach(spriteId => {
+            clearTimeout(timeoutRefs.current[spriteId]);
         });
     }
     useEffect(() => {
