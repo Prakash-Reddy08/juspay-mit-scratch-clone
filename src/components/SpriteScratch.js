@@ -10,6 +10,7 @@ export default function SpriteScratch() {
     const sprites = spritesState.sprites;
     const dispatch = useDispatch();
     const intervalRefs = useRef({});
+    const scratchRef = useRef(null)
     const executeAction = ({ spriteId, type, payload }) => {
         const actionMap = {
             [MOVE_STEPS]: () => dispatch(move({ spriteId, ...payload })),
@@ -29,7 +30,7 @@ export default function SpriteScratch() {
             let actionIndex = 0;
             clearTimeout(intervalRefs.current[sprite.id])
             const executeNextAction = () => {
-                if (actionIndex >= sprite.actions.length || sprite.actions.length === 0) {
+                if (actionIndex >= sprite.actions.length) {
                     return;
                 }
                 const action = sprite.actions[actionIndex];
@@ -66,9 +67,9 @@ export default function SpriteScratch() {
         };
     }, []);
     return (
-        <div className="stage-area overflow-hidden relative bg-white border-2 border-gray-200" style={{ flex: 0.8 }}>
+        <div className="stage-area overflow-hidden relative bg-white border-2 border-gray-200" style={{ flex: 0.8 }} ref={scratchRef}>
             {
-                sprites.map((sprite) => <Sprite key={sprite.id} sprite={sprite} />)
+                sprites.map((sprite) => <Sprite key={sprite.id} sprite={sprite} scratchRef={scratchRef} />)
             }
             <div className="absolute bottom-4 right-3">
                 <button

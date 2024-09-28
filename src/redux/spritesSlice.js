@@ -38,7 +38,7 @@ const spritesSlice = createSlice({
             const sprite = state.sprites.find((s) => s.id === spriteId);
             if (sprite) {
                 sprite.position.x += Math.cos((sprite.rotation * Math.PI) / 180) * steps;
-                sprite.position.y += Math.sin((sprite.rotation * Math.PI) / 180) * steps;
+                sprite.position.y -= Math.sin((sprite.rotation * Math.PI) / 180) * steps;
             }
         },
         goTo: (state, action) => {
