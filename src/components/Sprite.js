@@ -40,9 +40,6 @@ const Sprite = ({ sprite, containerSize, onDragStart, onDrag }) => {
     }, [containerSize, sprite.position.x, sprite.position.y]);
 
     const handleDragStart = (e) => {
-        const img = new Image();
-        img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
-        e.dataTransfer.setDragImage(img, 0, 0);
         onDragStart(sprite.id);
     };
 
