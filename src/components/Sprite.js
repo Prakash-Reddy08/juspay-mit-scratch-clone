@@ -18,28 +18,13 @@ export const SpriteImage = ({ spriteName, styles, handleClick }) => {
             return <></>
     }
 }
-const Sprite = ({ sprite, scratchRef }) => {
-    const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+const Sprite = ({ sprite, containerSize, onDragStart, onDrag }) => {
     const dispatch = useDispatch();
+
     const handleClick = (e) => {
-        e.preventDefault()
-        dispatch(selectSprite(sprite.id))
-    }
-    useEffect(() => {
-        if (!scratchRef.current) return;
-
-        const updateSize = () => {
-            const { width, height } = scratchRef.current.getBoundingClientRect();
-            setContainerSize({ width, height });
-        };
-
-        updateSize();
-
-        const resizeObserver = new ResizeObserver(updateSize);
-        resizeObserver.observe(scratchRef.current);
-
-        return () => resizeObserver.disconnect();
-    }, []);
+        e.preventDefault();
+        dispatch(selectSprite(sprite.id));
+    };
 
     const { left, top } = useMemo(() => {
         const centerX = containerSize.width / 2;
@@ -52,7 +37,14 @@ const Sprite = ({ sprite, scratchRef }) => {
             left: spriteX,
             top: spriteY
         };
-    }, [containerSize, SPRITE_WIDTH, SPRITE_HEIGHT, sprite.position]);
+    }, [containerSize, sprite.position.x, sprite.position.y]);
+
+    const handleDragStart = (e) => {
+        const img = new Image();
+        img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
+        e.dataTransfer.setDragImage(img, 0, 0);
+        onDragStart(sprite.id);
+    };
 
     return (
         <div
@@ -60,6 +52,9 @@ const Sprite = ({ sprite, scratchRef }) => {
             style={{
                 transform: `translate(${left}px, ${top}px) rotate(${sprite.rotation}deg)`,
             }}
+            draggable="true"
+            onDragStart={handleDragStart}
+            onDrag={onDrag}
         >
             <SpriteImage spriteName={sprite.name} handleClick={handleClick} styles={{ width: SPRITE_WIDTH + "px", height: SPRITE_HEIGHT + "px" }} />
         </div>

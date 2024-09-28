@@ -87,7 +87,6 @@ const spritesSlice = createSlice({
         updateActionValue: (state, action) => {
             const sprite = state.sprites.find((s) => s.id === state.selectedSpriteId);
             const { index, field, value } = action.payload;
-            console.log(sprite.actions[index])
             sprite.actions[index]['payload'][field] = value
         }
     },

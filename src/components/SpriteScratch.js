@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Sprite from "./Sprite";
 import { useDispatch, useSelector } from "react-redux";
 import { checkCollisionAndSwap, goTo, move, resetCollisionHandled, rotate } from "../redux/spritesSlice";
@@ -10,7 +10,9 @@ export default function SpriteScratch() {
     const sprites = spritesState.sprites;
     const dispatch = useDispatch();
     const intervalRefs = useRef({});
-    const scratchRef = useRef(null)
+    const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+    const [draggingSprite, setDraggingSprite] = useState(null);
+    const containerRef = useRef(null);
     const executeAction = ({ spriteId, type, payload }) => {
         const actionMap = {
             [MOVE_STEPS]: () => dispatch(move({ spriteId, ...payload })),
@@ -62,14 +64,55 @@ export default function SpriteScratch() {
         }
     }, [spritesState.collisionHandled])
     useEffect(() => {
+        if (!containerRef.current) return;
+
+        const updateSize = () => {
+            const { width, height } = containerRef.current.getBoundingClientRect();
+            setContainerSize({ width, height });
+        };
+
+        updateSize();
+
+        const resizeObserver = new ResizeObserver(updateSize);
+        resizeObserver.observe(containerRef.current);
         return () => {
+            resizeObserver.disconnect();
             clearTimeouts()
         };
     }, []);
+
+    const handleDragStart = useCallback((spriteId) => {
+        setDraggingSprite(spriteId);
+    }, []);
+    const handleDragOver = useCallback((e) => {
+        e.preventDefault();
+    }, []);
+
+    const handleDrop = useCallback((e) => {
+        e.preventDefault();
+        if (!containerRef.current || !draggingSprite) return;
+
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const centerX = containerRect.width / 2;
+        const centerY = containerRect.height / 2;
+
+        const newX = e.clientX - containerRect.left - centerX;
+        const newY = centerY - (e.clientY - containerRect.top);
+
+        dispatch(goTo({
+            spriteId: draggingSprite,
+            x: newX, y: newY
+        }));
+
+        setDraggingSprite(null);
+    }, [dispatch, draggingSprite, containerRef]);
     return (
-        <div className="stage-area overflow-hidden relative bg-white border-2 border-gray-200" style={{ flex: 0.8 }} ref={scratchRef}>
+        <div className="stage-area overflow-hidden relative bg-white border-2 border-gray-200" style={{ flex: 0.8 }} ref={containerRef} onDragOver={handleDragOver}
+            onDrop={handleDrop}>
             {
-                sprites.map((sprite) => <Sprite key={sprite.id} sprite={sprite} scratchRef={scratchRef} />)
+                sprites.map((sprite) => <Sprite key={sprite.id} sprite={sprite} containerSize={containerSize}
+                    onDragStart={handleDragStart}
+                />)
             }
             <div className="absolute bottom-4 right-3">
                 <button
